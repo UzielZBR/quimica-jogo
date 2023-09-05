@@ -1,0 +1,20 @@
+body {
+    background-color: #236;
+}
+
+.main {
+    background-color: aliceblue;
+    width: 70vw;
+    height: 96vh;
+    border-radius: 15px;
+    box-shadow: 2px 2px 5px black;
+    position: relative;
+    margin: auto;
+}
+
+.game {
+    border: 2px solid #333;
+    width: 600px;
+    height: 600px;
+    margin: auto;
+}
