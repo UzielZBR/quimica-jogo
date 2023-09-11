@@ -1,40 +1,63 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
+for (let i = 0; i < 16; i++) {
+    let question = questions[i];
+    var elem = document.createElement("audio");
+    elem.id = `${question.Filenames.Folder}-pergunta`;
+    elem.src = `audios/questoes/${question.Filenames.Folder}/pergunta.mp3`;
+    document.head.appendChild(elem);
+    for (let j = 0; j < 4; j++) {
+        var elem2 = document.createElement("audio");
+        elem2.id = `${question.Filenames.Folder}-${question.Filenames.Answers[j]}`;
+        elem2.src = `audios/questoes/${question.Filenames.Folder}/${question.Filenames.Answers[j]}.mp3`;
+        document.head.appendChild(elem2);
     }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+    var pot = Math.floor(i / 5);
+    var mult = (i % 5) + 1;
+    var elem3 = document.createElement("audio");
+    var num = (1000 * (10 ** pot) * mult).toString();
+    elem3.id = num;
+    elem3.src = `audios/outros/${num}.mp3`;
+    document.head.appendChild(elem3);
+}
+(function () {
+    var proxima = document.createElement("audio");
+    proxima.id = "primeira-pergunta";
+    proxima.src = "audios/outros/primeira-pergunta.mp3";
+    document.head.appendChild(proxima);
+    var proxima = document.createElement("audio");
+    proxima.id = "proxima-pergunta";
+    proxima.src = "audios/outros/proxima-pergunta.mp3";
+    document.head.appendChild(proxima);
+})();
 function introductionAudio() {
 }
 function firstQuestionAudio() {
-    var path = "../audios/outros/primeira-questao.mp3";
-    var pathRes = Promise.resolve(`${path}`).then(s => __importStar(require(s)));
-    console.log(pathRes);
-    var audio = new Audio(path);
-    console.log(audio.canPlayType("audio/mp3"));
-    audio.play();
-    setTimeout(() => { }, 1100);
+    document.getElementById("primeira-pergunta").play();
 }
 function nextQuestionAudio() {
-    var audio = new Audio("../audios/outros/proxima-questao.mp3");
-    audio.play();
-    setTimeout(() => { }, 1100);
+    document.getElementById("proxima-pergunta").play();
 }
+function rewardAudio() {
+    document.getElementById(Game.CurrentReward.toString()).play();
+}
+function questionAudio() {
+    var question = questions[Game.QuestionIndex];
+    var id = `${question.Filenames.Folder}-pergunta`;
+    document.getElementById(id).play();
+}
+var Timer = 0;
+var audio_loop = setInterval(() => {
+    Timer++;
+    if (Timer == 1) {
+        if (Game.State == 2 && Game.CurrentQuestion == 1)
+            firstQuestionAudio();
+        else
+            nextQuestionAudio();
+    }
+    if (Game.State >= 2 && Timer == 7) {
+        rewardAudio();
+    }
+    if (Game.State >= 2 && Timer == 13) {
+        questionAudio();
+    }
+}, 300);

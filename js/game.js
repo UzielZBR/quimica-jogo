@@ -12,8 +12,12 @@ class GameC {
     State = GameC.States.LoadingScreen;
     CurrentReward = 0;
     CurrentQuestion = 0;
+    QuestionIndex = 0;
     UsedQuestions = [];
     Buttons = [];
+    Lost = false;
+    Stopped = false;
+    Won = false;
     constructor() {
         this.loadingScreen();
     }
@@ -40,34 +44,109 @@ class GameC {
         this.State = GameC.States.Start;
         this.removeButton(this.Buttons[0]);
         requestAnimationFrame(draw);
+        setTimeout(() => { }, 1100);
         this.round1();
+    }
+    lose() {
+        for (let button of this.Buttons)
+            this.removeButton(button);
+        Game.Lost = true;
+        requestAnimationFrame(draw);
+    }
+    stop() {
+        for (let button of this.Buttons)
+            this.removeButton(button);
+        Game.Stopped = true;
+        requestAnimationFrame(draw);
+    }
+    win() {
+        for (let button of this.Buttons)
+            this.removeButton(button);
+        Game.Won = true;
+        requestAnimationFrame(draw);
     }
     nextQuestion() {
         while (true) {
-            this.CurrentQuestion = Math.floor(Math.random() * 16);
-            if (!this.UsedQuestions.includes(this.CurrentQuestion))
+            this.QuestionIndex = Math.floor(Math.random() * 16);
+            if (!this.UsedQuestions.includes(this.QuestionIndex) || this.UsedQuestions.length == 16)
                 break;
         }
-        this.UsedQuestions.push(this.CurrentQuestion);
-        if (this.State == 2 && this.CurrentQuestion == 1)
-            firstQuestionAudio();
-        else
-            nextQuestionAudio();
+        this.UsedQuestions.push(this.QuestionIndex);
+        Timer = 0;
+        Game.CurrentReward = 1000 * (10 ** (Game.State - 2)) * Game.CurrentQuestion;
+        requestAnimationFrame(draw);
     }
     answer1() {
-        console.log("ans1");
+        var question = questions[this.QuestionIndex];
+        if (question.Answer + 1 != 1) {
+            this.lose();
+            return;
+        }
+        if (this.State == 5) {
+            this.State++;
+            this.win();
+            return;
+        }
+        this.CurrentQuestion++;
+        if (this.CurrentQuestion == 6) {
+            this.CurrentQuestion = 1;
+            this.State++;
+        }
+        this.nextQuestion();
     }
     answer2() {
-        console.log("ans2");
+        var question = questions[this.QuestionIndex];
+        if (question.Answer + 1 != 2) {
+            this.lose();
+            return;
+        }
+        if (this.State == 5) {
+            this.State++;
+            this.win();
+            return;
+        }
+        this.CurrentQuestion++;
+        if (this.CurrentQuestion == 6) {
+            this.CurrentQuestion = 1;
+            this.State++;
+        }
+        this.nextQuestion();
     }
     answer3() {
-        console.log("ans3");
+        var question = questions[this.QuestionIndex];
+        if (question.Answer + 1 != 3) {
+            this.lose();
+            return;
+        }
+        if (this.State == 5) {
+            this.State++;
+            this.win();
+            return;
+        }
+        this.CurrentQuestion++;
+        if (this.CurrentQuestion == 6) {
+            this.CurrentQuestion = 1;
+            this.State++;
+        }
+        this.nextQuestion();
     }
     answer4() {
-        console.log("ans4");
-    }
-    stop() {
-        console.log("stop");
+        var question = questions[this.QuestionIndex];
+        if (question.Answer + 1 != 4) {
+            this.lose();
+            return;
+        }
+        if (this.State == 5) {
+            this.State++;
+            this.win();
+            return;
+        }
+        this.CurrentQuestion++;
+        if (this.CurrentQuestion == 6) {
+            this.CurrentQuestion = 1;
+            this.State++;
+        }
+        this.nextQuestion();
     }
     round1() {
         this.State = GameC.States.Round1;
@@ -119,7 +198,8 @@ class GameC {
             Height: 30,
             X_Pos: 217,
             Y_Pos: 395,
-            Callback: () => { this.stop(); }
+            Callback: () => { this.stop(); },
+            Draw: false
         };
         this.addButton(button_1);
         this.addButton(button_2);
@@ -168,7 +248,7 @@ var questions = [
         }
     },
     {
-        Question: "Quando um átomo possui menos elétrons que protons, dizemos que ele é:",
+        Question: "Quando um átomo possui menos elétrons que prótons, dizemos que ele é:",
         Answers: ["Um ânion", "Bivalente", "Um cátion", "Negativo"],
         Answer: 2,
         Filenames: {
@@ -199,7 +279,7 @@ var questions = [
         Answers: ["Ernest Rutherford", "Erwin Schrodinger", "Joseph Thomson", "Niels Bohr"],
         Answer: 1,
         Filenames: {
-            Folder: "modelo-atuaç",
+            Folder: "modelo-atual",
             Answers: ["ernest-rutherford", "erwin-schrodinger", "joseph-thomson", "niels-bohr"]
         }
     },
@@ -233,7 +313,7 @@ var questions = [
     {
         Question: "Quantos níveis um elétron pode ocupar na eletrosfera de um átomo?",
         Answers: ["5", "6", "7", "8"],
-        Answer: 1,
+        Answer: 2,
         Filenames: {
             Folder: "niveis-eletrosfera",
             Answers: ["5", "6", "7", "8"]
@@ -254,7 +334,7 @@ var questions = [
         Answer: 1,
         Filenames: {
             Folder: "ouro-simbolo",
-            Answers: ["", "", "", ""]
+            Answers: ["Ag", "Au", "Gu", "Ou"]
         }
     },
     {
@@ -272,7 +352,7 @@ var questions = [
         Answer: 2,
         Filenames: {
             Folder: "tabela-colunas-linhas",
-            Answers: ["17-7", "17-9", "18-7", "18-9"]
+            Answers: ["17e7", "17e9", "18e7", "18e9"]
         }
     },
 ];
